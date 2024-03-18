@@ -6,13 +6,6 @@ param resourceGroupName string
 
 param tags object
 
-param openaiName string = ''
-
-@allowed(['gpt-4', 'gpt-4-32k'])
-param gptModel string
-@allowed(['0613', '1106-Preview','0125-Preview'])
-param gptVersion string
-
 param msiName string = ''
 param appServicePlanName string = ''
 param appServiceName string = ''
@@ -24,21 +17,17 @@ param sqlDBName string = ''
 param searchName string = ''
 param storageName string = ''
 param documentIntelligenceName string = ''
-param speechName string = ''
-//param bingName string = ''
 @description('Deploy SQL Database? (required for SQL Plugin demo)')
 param deploySQL bool
 @description('Deploy Search service? (required for Search Plugin demo)')
 param deploySearch bool
 @description('Deploy Document Intelligence service? (required for Upload Plugin demo)')
-param deploySpeech bool
-@description('Deploy Speech service?')
 param deployDocIntel bool 
-param deployDalle3 bool = true
-//param deployBing bool = false
 
-@allowed(['Enabled', 'Disabled'])
-param publicNetworkAccess string
+param publicNetworkAccess string = 'Enabled'
+
+@description('Name of your existing open ai resource')
+param openaiName string
 
 var abbrs = loadJsonContent('abbreviations.json')
 
@@ -61,18 +50,17 @@ module m_msi 'modules/msi.bicep' = {
   }
 }
 
+resource existing_openai 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = {
+  name: openaiName
+  scope: az.resourceGroup('rg-hol-aoai')
+}
+
 module m_openai 'modules/openai.bicep' = {
   name: 'deploy_openai'
   scope: resourceGroup
   params: {
-    location: location
-    openaiName: !empty(openaiName) ? openaiName : '${abbrs.cognitiveServicesOpenAI}${environmentName}-${uniqueSuffix}'
-    gptModel: gptModel
-    gptVersion: gptVersion
     msiPrincipalID: m_msi.outputs.msiPrincipalID
-    publicNetworkAccess: publicNetworkAccess
-    deployDalle3: deployDalle3
-    tags: tags
+    openaiId: existing_openai.id
   }
 }
 
@@ -82,18 +70,6 @@ module m_docs 'modules/documentIntelligence.bicep' = if (deployDocIntel) {
   params: {
     location: location
     documentIntelligenceName: !empty(documentIntelligenceName) ? documentIntelligenceName : '${abbrs.cognitiveServicesFormRecognizer}${environmentName}-${uniqueSuffix}'
-    msiPrincipalID: m_msi.outputs.msiPrincipalID
-    publicNetworkAccess: publicNetworkAccess
-    tags: tags
-  }
-}
-
-module m_speech 'modules/speech.bicep' = if (deploySpeech) {
-  name: 'deploy_speech'
-  scope: resourceGroup
-  params: {
-    location: location
-    speechName: !empty(speechName) ? speechName : '${abbrs.cognitiveServicesSpeech}${environmentName}-${uniqueSuffix}'
     msiPrincipalID: m_msi.outputs.msiPrincipalID
     publicNetworkAccess: publicNetworkAccess
     tags: tags
@@ -111,6 +87,7 @@ module m_search 'modules/searchService.bicep' = if (deploySearch) {
     tags: tags
   }
 }
+
 
 module m_storage 'modules/storage.bicep' = {
   name: 'deploy_storage'
@@ -150,16 +127,6 @@ module m_cosmos 'modules/cosmos.bicep' = {
   }
 }
 
-// module m_bing 'modules/bing.bicep' = if (deployBing) {
-//   name: 'deploy_bing'
-//   scope: resourceGroup
-//   params: {
-//     location: 'global'
-//     bingName: !empty(bingName) ? bingName : '${abbrs.cognitiveServicesBing}${environmentName}-${uniqueSuffix}'
-//     msiPrincipalID: m_msi.outputs.msiPrincipalID
-//     tags: tags
-//   }
-// }
 
 module m_app 'modules/appservice.bicep' = {
   name: 'deploy_app'
@@ -171,16 +138,13 @@ module m_app 'modules/appservice.bicep' = {
     tags: tags
     msiID: m_msi.outputs.msiID
     msiClientID: m_msi.outputs.msiClientID
-    openaiName: m_openai.outputs.openaiName
-    openaiEndpoint: m_openai.outputs.openaiEndpoint
-    openaiGPTModel: m_openai.outputs.openaiGPTModel
-    openaiEmbeddingsModel: m_openai.outputs.openaiEmbeddingsModel
-    openaiDALLEModel: m_openai.outputs.openaiDalle3Model
-    //bingName: deployBing ? m_bing.outputs.bingName : ''
+    openaiName: openaiName 
+    openaiEndpoint: 'https://${openaiName}.openai.azure.com/'
+    openaiGPTModel: 'gpt-4'
+    openaiEmbeddingsModel: 'text-embedding-ada-002'
+    openaiDALLEModel: 'dall-e-3'
     documentIntelligenceName: deployDocIntel ? m_docs.outputs.documentIntelligenceName : ''
     documentIntelligenceEndpoint: deployDocIntel ? m_docs.outputs.documentIntelligenceEndpoint : ''
-    speechName: deploySpeech ? m_speech.outputs.speechName : ''
-    speechEndpoint: deploySpeech ? m_speech.outputs.speechEndpoint : ''
     searchName: deploySearch ? m_search.outputs.searchName : ''
     searchEndpoint: deploySearch ? m_search.outputs.searchEndpoint : ''
     cosmosEndpoint: m_cosmos.outputs.cosmosEndpoint

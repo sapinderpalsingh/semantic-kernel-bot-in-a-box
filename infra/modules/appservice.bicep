@@ -11,8 +11,8 @@ param openaiDALLEModel string
 
 param documentIntelligenceName string
 var documentIntelligenceNames = !empty(documentIntelligenceName) ? [documentIntelligenceName] : []
-param speechName string
-var speechNames = !empty(speechName) ? [speechName] : []
+//param speechName string
+//var speechNames = !empty(speechName) ? [speechName] : []
 //param bingName string
 //var bingNames = !empty(bingName) ? [bingName] : []
 param openaiName string
@@ -23,13 +23,14 @@ var searchNames = !empty(searchName) ? [searchName] : []
 param openaiEndpoint string
 param searchEndpoint string
 param documentIntelligenceEndpoint string
-param speechEndpoint string
+//param speechEndpoint string
 param sqlConnectionString string
 param cosmosEndpoint string
 
 
 resource openai 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = {
   name: openaiName
+  scope: resourceGroup('rg-hol-aoai')
 }
 
 // resource bingAccounts 'Microsoft.Bing/accounts@2020-06-10' existing = [for name in bingNames: {
@@ -48,9 +49,9 @@ resource documentIntelligences 'Microsoft.CognitiveServices/accounts@2023-05-01'
   name: name
 }]
 
-resource speeches 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = [for name in speechNames: {
-  name: name
-}]
+// resource speeches 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = [for name in speechNames: {
+//   name: name
+// }]
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: appServicePlanName
@@ -133,18 +134,18 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
           name: 'DOCINTEL_API_KEY'
           value: !empty(documentIntelligenceName) ? documentIntelligences[0].listKeys().key1 : ''
         }
-        {
-          name: 'SPEECH_API_ENDPOINT'
-          value: speechEndpoint
-        }
-        {
-          name: 'SPEECH_API_KEY'
-          value: !empty(speechName) ? speeches[0].listKeys().key1 : ''
-        }
-        {
-          name: 'SPEECH_REGION'
-          value: !empty(speechName) ? speeches[0].location : ''
-        }
+        // {
+        //   name: 'SPEECH_API_ENDPOINT'
+        //   value: speechEndpoint
+        // }
+        // {
+        //   name: 'SPEECH_API_KEY'
+        //   value: !empty(speechName) ? speeches[0].listKeys().key1 : ''
+        // }
+        // {
+        //   name: 'SPEECH_REGION'
+        //   value: !empty(speechName) ? speeches[0].location : ''
+        // }
         {
           name: 'SQL_CONNECTION_STRING'
           value: sqlConnectionString
