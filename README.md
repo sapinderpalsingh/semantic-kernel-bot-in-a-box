@@ -75,22 +75,19 @@ You may ask about the following topics to test each functionality
     - Ask about any publicly available knowledge;
 ![General question scenario](./readme_assets/webchat-general.png)
 
-2. Retrieval-augmented generation (SearchPlugin)
-    - Ask to look for hotels matching a description;
-![Retrieval-augmented scenario](./readme_assets/webchat-search.png)
-
-3. Structured data retrieval (SQLPlugin)
+1. Structured data retrieval (SQLPlugin)
     - Ask about your customers and sales;
 ![SQL connection scenario](./readme_assets/webchat-sql.png)
 
-4. Upload documents as context (UploadPlugin)
+1. Upload documents as context (UploadPlugin)
     - Upload a file and ask questions about it;
 ![Upload scenario](./readme_assets/webchat-upload.png)
 
-5. Generate images (DALLEPlugin)
+1. Generate images (DALLEPlugin)
     - Ask to generate images;
 ![Image Generation scenario](./readme_assets/webchat-dalle.png)
 
+1. [AI Search Retrieval-augmented generation](./use_cases/1-ai-search-rag.md)
 
 ## Keywords
 

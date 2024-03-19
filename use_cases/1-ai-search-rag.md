@@ -3,31 +3,13 @@
 Deploy an assistant that can search an Azure AI Search index to respond to questions.
 This sample will consider a sample HR Handbook.
 
-## Sample questions
+## Steps
 
-- Can you give me information about PTO?
-- Are my messages transmitted using company software private?
-- How is equal opportunity employment defined?
-
-## Recommended deployment parameters
-
-To deploy this solution, use the [Semantic Kernel Bot in-a-box](../README.md) accelerator with the following parameters:
-
-    Azure location = East US 2
-    gptModel = gpt-4
-    gptVersion = 1106-preview
-    deploySearch = true
-    publicNetworkAccess = true
-
-## Additional steps
-
-In addition to deploying the sample, You will need to configure the documents and search index to be used by the bot. Follow the steps below to do this:
-
-- Go to the Storage Account created as part of the deployment and add a container.
+- Go to the Storage Account created as part of the deployment and add a container `documents`.
 
 ![Create a blob container](../readme_assets/2-stg-container.png)
 
-- Drop any files you would like to be searched by the bot into the container. Supported file formats include. It is recommended to start with PDF, DOCX or PPTX. A great example to quickly validate the solution is an HR Handbook template, which can be easily found online.
+- Drop any files you would like to be searched by the bot into the container. Supported file formats include. It is recommended to start with PDF, DOCX or PPTX. A great example to quickly validate the solution is to use sample [documents from here.](https://github.com/Azure-Samples/azure-search-openai-demo/tree/main/data)
 
 ![Add a sample document to blob storage](../readme_assets/2-add-doc.png)
 
@@ -35,9 +17,18 @@ In addition to deploying the sample, You will need to configure the documents an
 
 ![Import and Vectorize documents](../readme_assets/2-import-vectorize.png)
 
+![Import config](../readme_assets/importdata-1.png)
+![Import config](../readme_assets/importdata-2.png)
+![Import config](../readme_assets/importdata-3.png)
+![Run import](../readme_assets/run-import.png)
+
+
 - Back to App Services, add the relevant environment variables:
     - **SEARCH_INDEX**: The name of the search index created.
+        ![Search Index](../readme_assets/search-index.png)
     - **SEARCH_SEMANTIC_CONFIG**: The name of the semantic configuration created. You can locate this value by going to Indexes -> Selec your index -> Semantic Configurations
+        ![Semantic Config](../readme_assets/semantic-configuration.png)
+        
 - (Optional) To enable linked citations:
     - Go to the created Index and add a "path" field, with the Retrievable option enabled.
     - Go to the created Indexer's JSON definition and add a field mapping to the path field
