@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/SemanticKernelBot.csproj",
+                "${workspaceFolder}/src/SemanticKernelBot.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/SemanticKernelBot.csproj",
+                "${workspaceFolder}/src/SemanticKernelBot.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/SemanticKernelBot.csproj"
+                "${workspaceFolder}/src/SemanticKernelBot.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
